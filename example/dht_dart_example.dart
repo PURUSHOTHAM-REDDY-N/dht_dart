@@ -6,7 +6,7 @@ import 'package:torrent_model/torrent_model.dart';
 
 void main() async {
   var torrent = await Torrent.parse('example/test7.torrent');
-  var infohashStr = String.fromCharCodes(torrent.infoHashBuffer);
+  var infohashStr = String.fromCharCodes(torrent.infoHashBuffer as Iterable<int>);
   var dht = DHT();
   var test = <CompactAddress>{};
   dht.announce(infohashStr, 22123);

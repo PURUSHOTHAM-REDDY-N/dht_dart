@@ -30,7 +30,7 @@ class Bucket extends TreeNode {
 
   List<Node> get nodes => _nodes;
 
-  TreeNode addNode(Node node) {
+  TreeNode? addNode(Node? node) {
     if (node == null) return null;
     if (_count >= bucketMaxSize) {
       return null;
@@ -54,7 +54,7 @@ class Bucket extends TreeNode {
     if (index > 62) {
       return _maxSize;
     }
-    return min(_maxSize, pow(2, index));
+    return min(_maxSize, pow(2, index).toInt());
   }
 
   void _nodeIsOutTime(Node node) {
@@ -62,7 +62,7 @@ class Bucket extends TreeNode {
     removeNode(node);
   }
 
-  TreeNode removeNode(dynamic a) {
+  TreeNode? removeNode(dynamic a) {
     if (a == null) return null;
     var id;
     if (a is TreeNode) {

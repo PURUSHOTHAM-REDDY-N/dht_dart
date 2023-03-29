@@ -20,7 +20,7 @@ void main() {
         var id = ID.randomID(20);
         var n = index ~/ 8; //相同数字个数
         var offset = index.remainder(8); // 第一个不相同数字的前面多少bit相同
-        var newId = List<int>(20);
+        var newId = List<int>.filled(20,0);
         var j = 0;
         for (; j < n; j++) {
           newId[j] = id.getValueAt(j);
@@ -61,24 +61,24 @@ void main() {
   group('PeerValue - ', () {
     test('Create/Parse', () {
       var peerValue =
-          CompactAddress(InternetAddress.tryParse('128.2.1.3'), 12311);
+          CompactAddress(InternetAddress.tryParse('128.2.1.3')!, 12311);
       var bytes = peerValue.toBytes();
       var p2 = CompactAddress.parseIPv4Address(bytes);
       assert(
-          p2.port == peerValue.port &&
+          p2!.port == peerValue.port &&
               p2.addressString == peerValue.addressString,
           'Parse error');
     });
 
     test('Contact encoding string', () {
       var peerValue =
-          CompactAddress(InternetAddress.tryParse('128.2.1.3'), 12311);
+          CompactAddress(InternetAddress.tryParse('128.2.1.3')!, 12311);
       var str = peerValue.toContactEncodingString();
-      var bs = latin1.encode(str);
+      var bs = latin1.encode(str!);
       assert(bs.length == 6);
       var p2 = CompactAddress.parseIPv4Address(bs);
       assert(
-          (p2.port == peerValue.port) &&
+          (p2!.port == peerValue.port) &&
               (p2.addressString == peerValue.addressString) &&
               (str == p2.toContactEncodingString()),
           'Parse error');
@@ -96,7 +96,7 @@ void main() {
       var offset = 0;
       for (var i = 0; i < n; i++, offset += 6) {
         var p2 = CompactAddress.parseIPv4Address(testBytes, offset);
-        var b = p2.toBytes();
+        var b = p2!.toBytes();
         for (var h = 0; h < 6; h++) {
           assert(b[h] == testBytes[offset + h]);
         }
@@ -129,10 +129,10 @@ void main() {
       var func;
       func = (TreeNode node, List<bool> re) {
         if (node.parent != null) {
-          if (node.parent.left == node) {
+          if (node.parent!.left == node) {
             re.insert(0, true);
           }
-          if (node.parent.right == node) {
+          if (node.parent!.right == node) {
             re.insert(0, false);
           }
         } else {
@@ -182,9 +182,9 @@ void main() {
       root.addNode(node3);
       assert(root.findNode(ID.randomID(idByteLength)) == null,
           'its impossible! unless the random bytes is same');
-      assert(root.findNode(id1).node == node, 'search error');
-      assert(root.findNode(id2).node != node, 'search error');
-      assert(root.findNode(id2).node == node2, 'search error');
+      assert(root.findNode(id1)!.node == node, 'search error');
+      assert(root.findNode(id2)!.node != node, 'search error');
+      assert(root.findNode(id2)!.node == node2, 'search error');
     });
 
     test('remove node', () {
@@ -255,7 +255,7 @@ void main() {
       id.add(l);
       var target = Node(ID.createID(id), null);
       var re = root.findClosestNodes(target.id);
-      assert(re.length == 8);
+      assert(re!.length == 8);
     });
   });
 
@@ -303,9 +303,9 @@ void main() {
       var nid = ID.randomID(20).toString();
       var nodes = <Node>[];
       nodes.add(Node(ID.randomID(20),
-          CompactAddress(InternetAddress.tryParse('120.0.0.1'), 2222)));
+          CompactAddress(InternetAddress.tryParse('120.0.0.1')!, 2222)));
       nodes.add(Node(ID.randomID(20),
-          CompactAddress(InternetAddress.tryParse('196.168.0.1'), 2223)));
+          CompactAddress(InternetAddress.tryParse('196.168.0.1')!, 2223)));
       var bytes = findNodeResponse(tid, nid, nodes);
       var obj = decode(bytes);
       assert(String.fromCharCodes(obj['y']) == 'r', 'y error');
@@ -362,7 +362,7 @@ void main() {
       }
       var offset = 0;
       for (var i = 0; i < n; i++, offset += 6) {
-        peers.add(CompactAddress.parseIPv4Address(testBytes, offset));
+        peers.add(CompactAddress.parseIPv4Address(testBytes, offset)!);
       }
 
       var bytes = getPeersResponse(tid, nid, 'token', peers: peers);
@@ -376,8 +376,8 @@ void main() {
       for (var i = 0; i < pbs.length; i++) {
         var ps = pbs[i];
         var p = CompactAddress.parseIPv4Address(ps);
-        assert(peers[i].addressString == p.addressString);
-        assert(peers[i].port == p.port);
+        assert(peers[i].addressString == p!.addressString);
+        assert(peers[i].port == p!.port);
       }
     });
   });
@@ -404,7 +404,7 @@ String intToRadix2String(int element) {
 
 List<int> randomBytes(count) {
   var random = Random();
-  var bytes = List<int>(count);
+  var bytes = List<int>.filled(count,0);
   for (var i = 0; i < count; i++) {
     bytes[i] = random.nextInt(254);
   }

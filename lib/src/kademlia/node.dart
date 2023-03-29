@@ -19,22 +19,22 @@ class Node {
 
   bool queried = false;
 
-  Timer _timer;
+  Timer? _timer;
 
   final Set<void Function(Node)> _cleanupHandler = <void Function(Node)>{};
 
   final Set<void Function(int index)> _bucketEmptyHandler =
       <void Function(int index)>{};
 
-  final CompactAddress _compactAddress;
+  final CompactAddress? _compactAddress;
 
-  List<Bucket> _buckets;
+  List<Bucket?>? _buckets;
 
-  InternetAddress get address => _compactAddress.address;
+  InternetAddress get address => _compactAddress!.address;
 
-  int get port => _compactAddress.port;
+  int get port => _compactAddress!.port;
 
-  List<Bucket> get buckets {
+  List<Bucket?>? get buckets {
     _buckets ??= _getBuckets();
     return _buckets;
   }
@@ -71,51 +71,51 @@ class Node {
     });
   }
 
-  List _getBuckets() {
-    _buckets ??= List<Bucket>(id.byteLength * 8);
+  List<Bucket?>? _getBuckets() {
+    _buckets ??= List<Bucket?>.filled(id.byteLength * 8,null);
     return _buckets;
   }
 
-  bool add(Node node) {
+  bool add(Node? node) {
     if (node == null) return false;
     var index = _getBucketIndex(node.id);
     if (index < 0) return false;
     var buckets = _getBuckets();
-    Bucket bucket = buckets[index];
+    var bucket = buckets![index];
     bucket ??= Bucket(index, k);
     buckets[index] = bucket;
     bucket.onEmpty(_whenBucketIsEmpty);
     return bucket.addNode(node) != null;
   }
 
-  Node findNode(ID id) {
-    if (_buckets == null || _buckets.isEmpty) return null;
+  Node? findNode(ID id) {
+    if (_buckets == null || _buckets!.isEmpty) return null;
     var index = _getBucketIndex(id);
     if (index == -1) return this;
     var buckets = _buckets;
-    var bucket = buckets[index];
+    var bucket = buckets![index];
     var tn = bucket?.findNode(id);
     return tn?.node;
   }
 
-  Bucket getIDBelongBucket(ID id) {
-    if (_buckets == null || _buckets.isEmpty) return null;
+  Bucket? getIDBelongBucket(ID id) {
+    if (_buckets == null || _buckets!.isEmpty) return null;
     var index = _getBucketIndex(id);
     if (index == -1) return null;
-    return _buckets[index];
+    return _buckets![index];
   }
 
-  List<Node> findClosestNodes(ID id) {
-    if (_buckets == null || _buckets.isEmpty) return null;
+  List<Node>? findClosestNodes(ID id) {
+    if (_buckets == null || _buckets!.isEmpty) return null;
     var index = _getBucketIndex(id);
     if (index == -1) return <Node>[this];
-    var bucket = _buckets[index];
+    var bucket = _buckets![index];
     var re = <Node>[];
-    while (index < _buckets.length) {
+    while (index < _buckets!.length) {
       if (_fillNodeList(bucket, re, k)) break;
       index++;
-      if (index >= _buckets.length) break;
-      bucket = _buckets[index];
+      if (index >= _buckets!.length) break;
+      bucket = _buckets![index];
     }
     return re;
   }
@@ -134,7 +134,7 @@ class Node {
     return _bucketEmptyHandler.add(h);
   }
 
-  bool _fillNodeList(Bucket bucket, List<Node> target, int max) {
+  bool _fillNodeList(Bucket? bucket, List<Node> target, int max) {
     if (bucket == null || bucket.nodes == null) return target.length >= max;
     for (var i = 0; i < bucket.nodes.length; i++) {
       if (target.length >= max) break;
@@ -148,15 +148,15 @@ class Node {
   }
 
   void remove(Node node) {
-    if (_buckets == null || _buckets.isEmpty) return null;
+    if (_buckets == null || _buckets!.isEmpty) return null;
     var index = _getBucketIndex(node.id);
-    var bucket = _buckets[index];
+    var bucket = _buckets![index];
     bucket?.removeNode(node);
   }
 
-  void forEach(void Function(Node node) processor) {
+  void forEach(void Function(Node node)? processor) {
     var buckets = this.buckets;
-    for (var i = 0; i < buckets.length; i++) {
+    for (var i = 0; i < buckets!.length; i++) {
       var b = buckets[i];
       if (b == null) continue;
       var l = b.nodes.length;
@@ -169,9 +169,9 @@ class Node {
     }
   }
 
-  String toContactEncodingString() {
+  String? toContactEncodingString() {
     if (id == null || _compactAddress == null) return null;
-    return '${id.toString()}${_compactAddress.toContactEncodingString()}';
+    return '${id.toString()}${_compactAddress!.toContactEncodingString()}';
   }
 
   @override
@@ -192,8 +192,8 @@ class Node {
     announced.clear();
 
     if (_buckets != null) {
-      for (var i = 0; i < _buckets.length; i++) {
-        var b = _buckets[i];
+      for (var i = 0; i < _buckets!.length; i++) {
+        var b = _buckets![i];
         b?.offEmpty(_whenBucketIsEmpty);
         b?.dispose();
       }
