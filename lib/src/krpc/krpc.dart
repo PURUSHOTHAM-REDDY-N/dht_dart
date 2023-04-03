@@ -403,7 +403,7 @@ class _KRPC implements KRPC {
 
   @override
   Future start() async {
-    _socket ??= await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+    _socket ??= await RawDatagramSocket.bind(InternetAddress.anyIPv4, 6881);
     _socket!.listen((event) {
       if (event == RawSocketEvent.read) {
         var datagram = _socket!.receive();
