@@ -301,7 +301,7 @@ class DHT {
     var token = String.fromCharCodes(_createToken(address));
     // 这里要返回Peers
     _krpc!.responseGetPeers(tid, infoHashStr, address, port, token,
-        nodes: nodes, peers: peers!);
+        nodes: nodes, peers: peers);
   }
 
   void _processGetPeersResponse(
@@ -406,7 +406,7 @@ class DHT {
         });
       }
     }
-    var nodes = data[NODES_KEY] as List<int>;
+    var nodes = data[NODES_KEY] as List<int>?;
     if (nodes == null) return;
     for (var i = 0; i < nodes.length; i += 26) {
       try {

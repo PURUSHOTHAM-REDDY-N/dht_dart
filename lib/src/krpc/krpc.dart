@@ -98,7 +98,7 @@ abstract class KRPC {
   /// send `get_peers` response to remote
   void responseGetPeers(String tid, String infoHash, InternetAddress address,
       int port, String token,
-      {Iterable<Node> nodes, Iterable<CompactAddress> peers});
+      {Iterable<Node> nodes, Iterable<CompactAddress>? peers});
 
   bool? onGetPeersReponse(KRPCResponseHandler handler);
 
@@ -310,7 +310,7 @@ class _KRPC implements KRPC {
       {Iterable<Node>? nodes, Iterable<CompactAddress>? peers}) {
     if (isStopped || _socket == null) return;
     var message = getPeersResponse(tid, _nodeId.toString(), token,
-        nodes: nodes!, peers: peers!);
+        nodes: nodes, peers: peers);
     _socket?.send(message!, address, port);
   }
 
