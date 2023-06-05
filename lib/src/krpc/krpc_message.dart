@@ -103,7 +103,10 @@ Uint8List? findNodeMessage(
 /// Also known as "Compact node info" the 20-byte Node ID in network byte order
 /// has the compact IP-address/port info concatenated to the end.
 Uint8List? findNodeResponse(
-    String transactionId, String nodeId, Iterable<Node> nodes) {
+    String transactionId, String nodeId, Iterable<Node>? nodes) {
+  if(nodes == null){
+    return null;
+  }
   var nodesStr = nodes.fold('', (previousValue, node) {
     return '${previousValue}${node.toContactEncodingString()}';
   });

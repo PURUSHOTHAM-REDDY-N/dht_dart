@@ -82,7 +82,7 @@ abstract class KRPC {
 
   /// send `find_node` response to remote
   void responseFindNode(
-      String tid, List<Node> nodes, InternetAddress address, int port);
+      String tid, List<Node>? nodes, InternetAddress address, int port);
 
   bool? onFindNodeRequest(KRPCQueryHandler handler);
 
@@ -98,7 +98,7 @@ abstract class KRPC {
   /// send `get_peers` response to remote
   void responseGetPeers(String tid, String infoHash, InternetAddress address,
       int port, String token,
-      {Iterable<Node> nodes, Iterable<CompactAddress>? peers});
+      {Iterable<Node>? nodes, Iterable<CompactAddress>? peers});
 
   bool? onGetPeersReponse(KRPCResponseHandler handler);
 
@@ -298,10 +298,12 @@ class _KRPC implements KRPC {
 
   @override
   void responseFindNode(
-      String tid, List<Node> nodes, InternetAddress address, int port) {
+      String tid, List<Node>? nodes, InternetAddress address, int port) {
     if (isStopped || _socket == null) return;
     var message = findNodeResponse(tid, _nodeId.toString(), nodes);
-    _socket?.send(message!, address, port);
+    if(message != null) {
+      _socket?.send(message!, address, port);
+    }
   }
 
   @override
@@ -409,11 +411,14 @@ class _KRPC implements KRPC {
         var datagram = _socket!.receive();
         Timer.run(() {
           try {
-            _processReceiveData(datagram!.address, datagram.port, datagram.data);
+            if(datagram != null) {
+              _processReceiveData(
+                  datagram.address, datagram.port, datagram.data);
+            }
           } catch (e) {
-            log('Process Receive Message Error',
+            log('Process Receive Message Error $e',
                 error: e, name: runtimeType.toString());
-          }
+         }
         });
       }
     },
@@ -487,7 +492,9 @@ class _KRPC implements KRPC {
         r['__additional'] = additionalValues;
       }
       // 处理远程发送的response
-      _fireResponse(event!, idBytes, address, port, r);
+      if(event != null) {
+        _fireResponse(event, idBytes, address, port, r);
+      }
       return;
     }
     if (method == QUERY_KEY &&

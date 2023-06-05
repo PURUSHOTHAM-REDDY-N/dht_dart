@@ -169,7 +169,7 @@ class DHT {
   void _processPing(List<int> idBytes, String tid, InternetAddress address,
       int port, dynamic data) {
     var id = ID.createID(idBytes, 0, 20);
-    Timer.run(() => _krpc!.pong(tid, address, port));
+    Timer.run(() => _krpc?.pong(tid, address, port));
     if (_canAdd(id)) {
       _tryToGetNode(address, port);
     } else {
@@ -182,12 +182,12 @@ class DHT {
       InternetAddress address, int port, dynamic data) {
     var infoHash = data['info_hash'] as List<int>;
     if (infoHash == null || infoHash.length != 20) {
-      _krpc!.error(tid, address, port, 203, 'Bad InfoHash');
+      _krpc?.error(tid, address, port, 203, 'Bad InfoHash');
       return;
     }
     var token = data[TOKEN_KEY];
     if (token == null || token.length != 4 || !_validateToken(token, address)) {
-      _krpc!.error(tid, address, port, 203, 'Bad token');
+      _krpc?.error(tid, address, port, 203, 'Bad token');
       return;
     }
     var infoHashStr = String.fromCharCodes(infoHash);
@@ -200,7 +200,7 @@ class DHT {
     } else {
       var peerPort = data['port'];
       if (peerPort == null) {
-        _krpc!.error(
+        _krpc?.error(
             tid, address, port, 203, 'invalid arguments - port is null');
         return;
       }
@@ -291,7 +291,7 @@ class DHT {
     }
     var infohash = data['info_hash'] as List<int>;
     if (infohash == null || infohash.length != 20) {
-      _krpc!.error(tid, address, port, 203, 'invalid arguments');
+      _krpc?.error(tid, address, port, 203, 'invalid arguments');
       return;
     }
     var nodes = _findClosestNode(infohash);
@@ -300,7 +300,7 @@ class DHT {
     // TODO 这里要区分IPv6和IPv4 !!!!!!!
     var token = String.fromCharCodes(_createToken(address));
     // 这里要返回Peers
-    _krpc!.responseGetPeers(tid, infoHashStr, address, port, token,
+    _krpc?.responseGetPeers(tid, infoHashStr, address, port, token,
         nodes: nodes, peers: peers);
   }
 
@@ -332,7 +332,7 @@ class DHT {
       if (peerPort != null) {
         node.announced[infoHash] = true;
         // print('公告Peer:端口 $peerPort ,hash:$infoHash');
-        _krpc!.announcePeer(infoHash, peerPort, token, address, port);
+        _krpc?.announcePeer(infoHash, peerPort, token, address, port);
       }
     }
     if (data[NODES_KEY] != null) {
@@ -377,11 +377,11 @@ class DHT {
     }
     var target = data[TARGET_KEY];
     if (target == null || target.length != 20) {
-      _krpc!.error(tid, address, port, 203, 'invalid arguments');
+      _krpc?.error(tid, address, port, 203, 'invalid arguments');
       return;
     }
     var nodes = _findClosestNode(target);
-    _krpc!.responseFindNode(tid, nodes, address, port);
+    _krpc?.responseFindNode(tid, nodes, address, port);
   }
 
   /// `response: {"id" : "<queried nodes id>", "nodes" : "<compact node info>"}`
@@ -424,7 +424,7 @@ class DHT {
     }
   }
 
-  List<Node> _findClosestNode(List<int> idBytes) {
+  List<Node>? _findClosestNode(List<int> idBytes) {
     var id = ID.createID(idBytes, 0, 20);
     var node = _root!.findNode(id);
     var nodes;
@@ -440,7 +440,7 @@ class DHT {
     if (node.announced[infoHash] != null && node.announced[infoHash]!) {
       return;
     }
-    Timer.run(() => _krpc!.getPeers(infoHash, node.address, node.port));
+    Timer.run(() => _krpc?.getPeers(infoHash, node.address, node.port));
   }
 
   void _tryToGetNode(InternetAddress address, int port, [String? id]) {
@@ -450,7 +450,7 @@ class DHT {
       }
     }
     if (id != null) {
-      Timer.run(() => _krpc!.findNode(id!, address, port));
+      Timer.run(() => _krpc?.findNode(id!, address, port));
     }
   }
 
@@ -475,7 +475,7 @@ class DHT {
         _requestGetPeers(node, infohash);
       } else {
         node.announced[infohash] = true;
-        _krpc!.announcePeer(infohash, port, token, node.address, node.port);
+        _krpc?.announcePeer(infohash, port, token, node.address, node.port);
       }
     });
   }
