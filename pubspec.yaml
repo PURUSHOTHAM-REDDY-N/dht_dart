@@ -23,4 +23,4 @@ dev_dependencies:
   torrent_model:
     git:
       url: https://github.com/PURUSHOTHAM-REDDY-N/torrent_model.git
-      ref: main 
+      ref: master 
